@@ -5382,4 +5382,156 @@
     flex-wrap: wrap;
 }
 
+/* MODAL PORCENTAJE SKU - CSS Optimizado */
+.modal-pct-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+.modal-pct-overlay.active {
+  display: flex;
+}
+.modal-pct-content {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border-radius: 20px;
+  padding: 32px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.modal-pct-title {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+}
+
+/* Gauge */
+.pct-gauge {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 28px;
+}
+.pct-gauge svg {
+  transform: rotate(-90deg);
+}
+.gauge-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 10;
+}
+.gauge-progress {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 327;
+  stroke-dashoffset: 327;
+  transition: stroke-dashoffset 0.8s ease-out, stroke 0.3s;
+}
+.pct-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#pctNumber {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+}
+.pct-symbol {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 2px;
+}
+
+/* Stats */
+.pct-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.pct-stat {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 14px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pct-stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+.pct-stat-label {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.pct-stat-ok .pct-stat-value {
+  color: #22c55e;
+}
+.pct-stat-warning .pct-stat-value {
+  color: #ef4444;
+}
+
+/* Status */
+.pct-status {
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.pct-status.excelente {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+.pct-status.bueno {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+.pct-status.regular {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+.pct-status.bajo {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .modal-pct-content {
+    padding: 24px 18px;
+  }
+  .pct-gauge {
+    width: 130px;
+    height: 130px;
+  }
+  #pctNumber {
+    font-size: 2rem;
+  }
+  .pct-stat-value {
+    font-size: 1.2rem;
+  }
+}
+
+
     
