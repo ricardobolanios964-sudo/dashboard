@@ -13,6 +13,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+     <svg style="position: absolute; width: 0; height: 0;">
+    <defs>
+        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#ff6b00"/>
+            <stop offset="50%" style="stop-color:#ff9500"/>
+            <stop offset="100%" style="stop-color:#ffcc00"/>
+        </linearGradient>
+    </defs>
+</svg>
 <div class="container">
     <div class="header">
         <div class="header-left">
@@ -28,7 +37,13 @@
         <div class="stat-card"><h3>Total Requi</h3><p id="statTotalRequi">0</p></div>
         <div class="stat-card" style="background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);"><h3>Total Des</h3><p id="statTotalDes">0</p></div>
         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"><h3>Completitup</h3><p id="statCompletitup">0%</p></div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);"><h3>SKU</h3><p id="statSKU">0</p></div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);">
+    <h3>SKU</h3>
+    <p id="statSKU">0</p>
+    <button class="btn-ver-reporte" onclick="abrirModalPorcentajeSKU()">
+        📈 Ver Eficiencia SKU
+    </button>
+</div>
         <!-- Agregando botón de reporte en la tarjeta SKU Sin Des -->
         <div class="stat-card stat-card-with-button" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
             <h3>SKU Sin Des</h3>
@@ -192,7 +207,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFZUyjvlU7g4HU
 let tablaDatos = [];
 const MAX_FILAS_INICIAL = 10;
 
-let estadisticasCache = null;
+let estadisticasCache1 = null;
 let datosSKUSinDesCache = null;
 let modalHTMLCache = null;
 
@@ -1066,6 +1081,124 @@ document.addEventListener('DOMContentLoaded', () => {
     obtenerDatosCSV();
     iniciarAutoRefresh();
 });
+
+    /* =====================================================
+   FUNCIONES PARA MODAL PORCENTAJE SKU
+   Agregar DESPUES de tus declaraciones de variables
+   NO DECLARA estadisticasCache - usa la tuya existente
+   ===================================================== */
+
+// Ensure estadisticasCache is declared before use
+var estadisticasCache
+
+function abrirModalPorcentajeSKU() {
+  if (!estadisticasCache) {
+    alert("No hay datos cargados. Espera a que se carguen los datos.")
+    return
+  }
+
+  var skuTotal = estadisticasCache.totalSKU || 0
+  var skuSinDes = estadisticasCache.totalSKUSinDes || 0
+  var skuDespachados = skuTotal - skuSinDes
+
+  var porcentaje = 0
+  if (skuTotal > 0) {
+    porcentaje = ((skuDespachados / skuTotal) * 100).toFixed(1)
+  }
+
+  document.getElementById("modalTotalSKU").textContent = skuTotal.toLocaleString()
+  document.getElementById("modalDespachados").textContent = skuDespachados.toLocaleString()
+  document.getElementById("modalPendientes").textContent = skuSinDes.toLocaleString()
+  document.getElementById("pctNumber").textContent = porcentaje
+
+  var offset = 327 - (porcentaje / 100) * 327
+  var gauge = document.getElementById("gaugeProgress")
+  gauge.style.strokeDashoffset = offset
+
+  if (porcentaje >= 95) {
+    gauge.style.stroke = "#22c55e"
+  } else if (porcentaje >= 80) {
+    gauge.style.stroke = "#eab308"
+  } else if (porcentaje >= 60) {
+    gauge.style.stroke = "#f97316"
+  } else {
+    gauge.style.stroke = "#ef4444"
+  }
+
+  var status = document.getElementById("pctStatus")
+  status.className = "pct-status"
+
+  if (porcentaje >= 95) {
+    status.classList.add("excelente")
+    status.textContent = "Excelente"
+  } else if (porcentaje >= 80) {
+    status.classList.add("bueno")
+    status.textContent = "Bueno"
+  } else if (porcentaje >= 60) {
+    status.classList.add("regular")
+    status.textContent = "Regular"
+  } else {
+    status.classList.add("bajo")
+    status.textContent = "Bajo"
+  }
+
+  document.getElementById("modalPorcentajeSKU").classList.add("active")
+  document.body.style.overflow = "hidden"
+}
+
+function cerrarModalPorcentajeSKU() {
+  document.getElementById("modalPorcentajeSKU").classList.remove("active")
+  document.body.style.overflow = "auto"
+  document.getElementById("gaugeProgress").style.strokeDashoffset = 327
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  var modal = document.getElementById("modalPorcentajeSKU")
+  if (modal) {
+    modal.addEventListener("click", function (e) {
+      if (e.target === this) {
+        cerrarModalPorcentajeSKU()
+      }
+    })
+  }
+})
 </script>
+    <!-- MODAL PORCENTAJE SKU - Agregar antes de </body> -->
+<div id="modalPorcentajeSKU" class="modal-pct-overlay">
+    <div class="modal-pct-content" onclick="event.stopPropagation()">
+        <h2 class="modal-pct-title">Eficiencia de Despacho SKU</h2>
+        
+        <!-- Gauge circular -->
+        <div class="pct-gauge">
+            <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" class="gauge-track"/>
+                <circle cx="60" cy="60" r="52" class="gauge-progress" id="gaugeProgress"/>
+            </svg>
+            <div class="pct-value">
+                <span id="pctNumber">0</span><span class="pct-symbol">%</span>
+            </div>
+        </div>
+        
+        <!-- Stats -->
+        <div class="pct-stats">
+            <div class="pct-stat">
+                <span class="pct-stat-value" id="modalTotalSKU">0</span>
+                <span class="pct-stat-label">Total SKU</span>
+            </div>
+            <div class="pct-stat pct-stat-ok">
+                <span class="pct-stat-value" id="modalDespachados">0</span>
+                <span class="pct-stat-label">Despachados</span>
+            </div>
+            <div class="pct-stat pct-stat-warning">
+                <span class="pct-stat-value" id="modalPendientes">0</span>
+                <span class="pct-stat-label">Sin Despachar</span>
+            </div>
+        </div>
+        
+        <!-- Status -->
+        <div class="pct-status" id="pctStatus"></div>
+    </div>
+</div>
 </body>
 </html>
+
